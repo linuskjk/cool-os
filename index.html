@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My own Web OS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="desktop"></div>
+  <div id="dock">
+    <div class="dock-app" onclick="openWindow('terminal')">
+      <img src="assets/icons/terminal.svg" alt="Terminal">
+      <span>Terminal</span>
+    </div>
+    <div class="dock-app" onclick="openWindow('explorer')">
+      <img src="assets/icons/folder.svg" alt="Explorer">
+      <span>Explorer</span>
+    </div>
+    <div class="dock-app" onclick="openWindow('editor')">
+      <img src="assets/icons/edit.svg" alt="Editor">
+      <span>Editor</span>
+    </div>
+    <div class="dock-app" onclick="openWindow('calculator')">
+      <img src="assets/icons/calculator.svg" alt="Calculator">
+      <span>Calculator</span>
+    </div>
+    <div class="dock-app" onclick="openWindow('browser')">
+      <img src="assets/icons/browser.svg" alt="Browser">
+      <span>Browser</span>
+    </div>
+    <div class="dock-app" onclick="openWindow('settings')">
+      <img src="assets/icons/settings.svg" alt="Settings">
+      <span>Settings</span>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

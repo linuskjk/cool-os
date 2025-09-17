@@ -1,0 +1,377 @@
+/* Variables */
+:root {
+  --win-radius: 12px;
+  --win-border: 2px;
+  --win-header-radius: calc(var(--win-radius) - var(--win-border));
+  --accent: #3af;
+}
+
+/* Make body/dt backgrounds correct per theme */
+html { background: #181c20; }               /* fallback to avoid white flash */
+
+/* Light theme (already present) */
+body.light-theme {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #222;
+}
+
+/* FIX: the desktop never has class 'light-theme' */
+.light-theme #desktop { background: transparent !important; }
+
+/* Ensure dark by default when not in light mode */
+body:not(.light-theme) #desktop { background: #181c20 !important; }
+
+/* Light theme */
+body.light-theme {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #222;
+}
+#desktop.light-theme { background: transparent; }
+.light-theme #dock { background: rgba(255,255,255,0.95); box-shadow: 0 4px 24px #bbb8; }
+.light-theme .dock-app span { color: #222; text-shadow: 0 1px 2px #fff8; }
+.light-theme .window { background: #fff; border: 2px solid var(--accent); color: #222; }
+.light-theme .window-header { background: linear-gradient(90deg, #e0eafc 0%, #cfdef3 100%); color: #222; box-shadow: 0 2px 8px #bbb4; border-radius: var(--win-header-radius) var(--win-header-radius) 0 0; }
+.light-theme .window-close { background: #f88; color: #fff; }
+.light-theme .window-close:hover { background: #d22; }
+.light-theme .window-content { background: #f5f7fa; color: #222; }
+.light-theme #terminalInput, .light-theme #editorArea { background: #fff; color: #222; border: 1px solid #bbb; }
+.light-theme ul#fileList li:hover { background: #bdf2; }
+
+/* Base */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Liberation Sans', Arial, monospace;
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  color: #cfc;
+  overflow: hidden;
+}
+
+/* Desktop & Dock */
+#desktop {
+  position: absolute; inset: 0 0 80px 0;
+  background: transparent;             /* was: rgb(38, 38, 38) */
+  overflow: hidden; z-index: 1;
+  height: 100%;
+}
+#dock {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: 20px;
+  min-height: 110px; height: auto;
+  background: rgba(30,30,30,0.95);
+  border-radius: 18px; box-shadow: 0 4px 24px #000a;
+  display: flex; align-items: center; gap: 44px;
+  padding: 12px 34px 18px 34px; z-index: 100;
+}
+.dock-app {
+  width: 72px; height: 86px; position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; user-select: none; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.dock-app::before {
+  content: ""; position: absolute; left: 50%; top: 8px; transform: translateX(-50%);
+  width: 48px; height: 48px; border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  box-shadow: inset 0 1px 1px #fff2, 0 4px 10px #0006;
+  transition: background .15s, transform .15s; pointer-events: none;
+}
+.dock-app:hover::before { background: rgba(58,170,255,0.18); transform: translateX(-50%) scale(1.05); }
+.dock-app:hover {
+  transform: scale(1.2); /* more noticeable icon growth */
+}
+.dock-app img {
+  width: 40px; height: 40px; margin: 10px 0 6px 0;
+  filter: brightness(1.15) contrast(1.1) drop-shadow(0 2px 4px #0008);
+}
+.dock-app span { margin-top: 6px; line-height: 1.1; color: #e8ffff; text-shadow: 0 1px 2px #000c; font-weight: 500; }
+
+/* Windows */
+.window {
+  position: absolute; top: 80px; left: 80px; width: 420px; height: 320px;
+  background: rgba(34,34,40,0.98);
+  border: var(--win-border) solid var(--accent);
+  border-radius: var(--win-radius);
+  box-shadow: 0 8px 32px #000b;
+  display: flex; flex-direction: column; z-index: 10;
+  resize: both; overflow: hidden; background-clip: padding-box;
+  animation: popin .18s cubic-bezier(.5,1.8,.7,1) 1;
+  min-width: 360px;
+  min-height: 260px;
+}
+@keyframes popin { 0%{transform:scale(.85);opacity:0} 100%{transform:scale(1);opacity:1} }
+
+.window-header {
+  background: linear-gradient(90deg, #232526 0%, var(--accent) 100%);
+  color: #fff; padding: 10px 16px; cursor: move; user-select: none; font-weight: bold;
+  display: flex; justify-content: space-between; align-items: center;
+  border-radius: var(--win-header-radius) var(--win-header-radius) 0 0;
+  position: relative; z-index: 1; font-size: 1.1em; letter-spacing: .5px; box-shadow: 0 2px 8px #0004;
+}
+.window-close {
+  color: #fff; background: #f44; border: none; font-size: 1.2em;
+  border-radius: 50%; width: 28px; height: 28px; cursor: pointer; margin-left: 10px;
+  box-shadow: 0 1px 4px #0006; transition: background .15s; display: flex; align-items: center; justify-content: center; padding: 0;
+}
+.window-close:hover { background: #d22; }
+.window-close span { display: block; width: 100%; text-align: center; line-height: 1; }
+
+.window-content {
+  flex: 1; padding: 16px; background: #232526; color: #cfc; overflow: auto;
+  border-radius: 0 0 var(--win-radius) var(--win-radius);
+  display: flex; flex-direction: column;
+}
+
+/* Strong overrides for legacy blocks */
+#desktop .window { border-radius: 12px !important; overflow: hidden !important; background-clip: padding-box !important; border: 2px solid var(--accent) !important; }
+#desktop .window > .window-header { border-radius: 0 !important; }
+.light-theme #desktop .window > .window-header { border-radius: 0 !important; }
+#desktop .window > .window-content { border-radius: 0 0 12px 12px !important; }
+#desktop .window .window-close { box-shadow: 0 1px 3px #0005 !important; }
+
+/* Scrollbars (consistent) */
+* { scrollbar-width: thin; scrollbar-color: #2aa7ff #0f1520; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: #0f1520; border-radius: 8px; }
+*::-webkit-scrollbar-thumb { background: linear-gradient(#2aa7ff,#1775c8); border-radius: 8px; border: 2px solid #0f1520; }
+*::-webkit-scrollbar-thumb:hover { background: linear-gradient(#55b9ff,#2790f0); }
+
+/* Terminal */
+.terminal { display: flex; flex-direction: column; height: 100%; gap: 10px; }
+.terminal-output { flex: 1; overflow: auto; background: #0a0a0a; border-radius: 8px; padding: 10px; box-shadow: inset 0 1px 0 #ffffff10; }
+.terminal-input,
+#terminalInput { /* keep id for legacy */
+  width: 100%; background: #0b0b0b; color: #0f0; border: 1px solid #1e1e1e; border-radius: 8px; padding: 10px 12px; font-family: inherit; outline: none; box-shadow: inset 0 1px 0 #ffffff10;
+}
+
+/* Editor */
+.editor { display: flex; flex-direction: column; height: 100%; }
+.editor textarea,
+#editorArea { /* keep id for legacy */
+  flex: 1; width: 100%; height: auto; background: #000; color: #0f0;
+  border: 1px solid #1e1e1e; border-radius: 8px; padding: 12px; resize: none; box-sizing: border-box;
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Browser */
+.browser { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+.urlbar { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.urlbar input {
+  width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #1e1e1e; background: #0b0f14; color: #eaf8ff; outline: none;
+}
+.urlbar button, .quickbar button, .primary-btn {
+  background: #2aa7ff; color: #fff; border: none; border-radius: 8px; padding: 10px 14px; cursor: pointer;
+  transition: transform .06s ease, box-shadow .15s ease, background .15s ease; box-shadow: 0 4px 12px #2aa7ff33;
+}
+.urlbar button:hover, .quickbar button:hover, .primary-btn:hover { background: #1590ea; }
+.urlbar button:active, .quickbar button:active, .primary-btn:active { transform: translateY(1px); }
+.quickbar { display: flex; gap: 8px; flex-wrap: wrap; }
+.browser iframe { flex: 1; width: 100%; border: none; background: #fff; border-radius: 8px; box-shadow: inset 0 1px 0 #00000010; }
+
+/* Calculator */
+.calc { display: flex; flex-direction: column; height: 100%; gap: 12px; }
+.calc-display { width: 100%; font-size: 1.4em; color: #0f0; background: #000; padding: 12px; border-radius: 8px; border: 1px solid #1e1e1e; box-sizing: border-box; }
+.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; align-content: start; }
+.calc-btn { padding: 12px 0; border-radius: 8px; border: 1px solid #1e1e1e; background: #262b33; color: #eaf8ff; cursor: pointer; box-shadow: 0 2px 8px #0006; transition: transform .06s ease, background .12s ease, box-shadow .15s ease; }
+.calc-btn:hover { background: #2a3038; } .calc-btn:active { transform: translateY(1px); box-shadow: 0 1px 6px #0007; }
+.calc-btn.op { background: #1f3d57; } .calc-btn.equals { background: #2aa7ff; color: #fff; } .calc-btn.danger { background: #e05252; color: #fff; }
+.calc-center { display: grid; place-items: center; width: 100%; height: 100%; }
+.calc-scale { position: relative; width: 100%; height: 100%; }   /* was: aspect-ratio */
+.calc-ui     { position: absolute; left: 50%; top: 15%; width: 320px; height: 300px; transform-origin: 0 0; }
+
+/* Settings */
+.settings-grid {
+  display: grid; grid-template-columns: 180px 1fr; gap: 10px 12px; align-items: center; max-width: 640px;
+}
+.settings-grid input[type="color"], .settings-grid select, .settings-grid input[type="range"] { width: 100%; }
+.settings-grid select, .settings-grid input[type="color"] { background: #0b0f14; color: #eaf8ff; border: 1px solid #1e1e1e; border-radius: 8px; padding: 8px 10px; }
+.settings-grid input[type="checkbox"] { width: 18px; height: 18px; }
+.settings-note { opacity: .75; margin-top: 12px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px; background: linear-gradient(90deg, #2aa7ff, #1775c8); outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #1775c8; box-shadow: 0 2px 6px #0008; }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #1775c8; box-shadow: 0 2px 6px #0008; }
+
+/* Explorer */
+.explorer { display: flex; flex-direction: column; height: 100%; }
+.explorer-header { font-weight: 700; color: #b7ffb7; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #2aa7ff55; }
+#fileList { flex: 1; overflow: auto; list-style: none; padding: 0; margin: 0; }
+#fileList .file-item { padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background .12s ease, transform .06s ease; }
+#fileList .file-item:hover { background: #2aa7ff22; }
+#fileList .file-item:active { transform: translateY(1px); }
+
+/* --- Light mode final overrides --- */
+body.light-theme {
+  /* force the light gradient over any earlier body rule */
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+  color: #222 !important;
+}
+/* Desktop must be transparent so the light body shows through */
+body.light-theme #desktop {
+  background: transparent !important;
+}
+
+/* Terminal readable in light mode */
+body.light-theme .terminal-output {
+  background: #ffffff !important;
+  color: #222 !important;
+  border-radius: 8px;
+  border: 1px solid #d7dde6;
+  box-shadow: inset 0 1px 0 #00000010;
+}
+body.light-theme .terminal-input {
+  background: #ffffff !important;
+  color: #111 !important;
+  border: 1px solid #cfd6e0 !important;
+}
+
+/* Optional: lighter scrollbars in light mode */
+body.light-theme * {
+  scrollbar-color: #9ab8ff #e9eef6;
+}
+body.light-theme *::-webkit-scrollbar-track { background: #e9eef6; }
+body.light-theme *::-webkit-scrollbar-thumb {
+  background: linear-gradient(#8fb8ff,#6ea0f0);
+  border: 2px solid #e9eef6;
+}
+
+/* Dock placement-aware desktop insets */
+body.dock-bottom #desktop { top: 0;    bottom: 140px; } /* leave space for bottom dock */
+body.dock-top    #desktop { top: 140px; bottom: 0;    } /* leave space for top dock   */
+
+/* Position the dock partially off screen at edges */
+body.dock-top #dock {
+  top: -50px !important;             /* Move it up so it's partially off-screen */
+  bottom: auto !important;
+  box-shadow: 0 8px 24px #0008;      /* Shadow goes down */
+  padding-top: 56px;                 /* Extra top padding compensates for off-screen part */
+  padding-bottom: 8px;               /* Less bottom padding as it's at the top */
+}
+
+body.dock-bottom #dock {
+  bottom: -50px !important;          /* Move it down so it's partially off-screen */
+  top: auto !important;
+  box-shadow: 0 -8px 24px #0008;     /* Shadow goes up */
+  padding-bottom: 56px;              /* Extra bottom padding */
+  padding-top: 8px;                  /* Less top padding as it's at the bottom */
+}
+
+/* Adjust desktop margins for partially visible dock */
+body.dock-top #desktop {
+  top: 60px;  /* was 70px; adjusted for new dock position */
+  bottom: 0;
+}
+
+body.dock-bottom #desktop {
+  top: 0;
+  bottom: 60px; /* was 70px; adjusted for new dock position */
+}
+
+/* Remove the old hover transition that moved the entire dock */
+#dock {
+  transition: none;  /* remove the hover-move transition */
+  z-index: 100;
+}
+/* Remove these problematic hover effects */
+body.dock-top #dock:hover { transform: none; }
+body.dock-bottom #dock:hover { transform: none; }
+/* --- Disable ALL hover effects on the dock and its icons --- */
+#dock, #dock * { transition: none !important; }
+
+body.dock-top #dock:hover,
+body.dock-bottom #dock:hover { transform: none !important; }
+
+/* No icon growth or background change on hover/active */
+.dock-app:hover,
+.dock-app:active { transform: none !important; }
+
+.dock-app:hover::before,
+.dock-app:active::before {
+  background: rgba(255,255,255,0.06) !important;
+  transform: translateX(-50%) !important;
+}
+
+/* Dock: disable container hover completely, keep icons interactive */
+#dock {
+  pointer-events: none !important;          /* dock itself never hovers */
+  transition: none !important;
+}
+#dock .dock-app {
+  pointer-events: auto !important;          /* icons still clickable */
+}
+
+/* Freeze any hover transforms anywhere in the dock */
+#dock:hover, #dock:active { transform: translateX(-50%) !important; }
+#dock * { transition: none !important; }
+.dock-app:hover, .dock-app:active { transform: none !important; }
+.dock-app:hover::before, .dock-app:active::before {
+  background: rgba(255,255,255,0.06) !important;
+  transform: translateX(-50%) !important;
+}
+
+/* FINAL: freeze dock on any hover and disable icon hovers */
+#dock, #dock * { transition: none !important; }
+
+/* Keep the dock centered and fixed in place no matter what hovers */
+body.dock-bottom #dock,
+body.dock-bottom #dock:hover,
+body.dock-bottom #dock:has(.dock-app:hover),
+body.dock-bottom #dock:has(.dock-app:active) {
+  transform: translateX(-50%) !important;
+  bottom: -50px !important;
+  top: auto !important;
+}
+body.dock-top #dock,
+body.dock-top #dock:hover,
+body.dock-top #dock:has(.dock-app:hover),
+body.dock-top #dock:has(.dock-app:active) {
+  transform: translateX(-50%) !important;
+  top: -50px !important;
+  bottom: auto !important;
+}
+
+/* No icon growth or bg change */
+.dock-app:hover,
+.dock-app:active,
+.dock-app:focus,
+.dock-app:focus-visible { transform: none !important; }
+
+.dock-app:hover::before,
+.dock-app:active::before,
+.dock-app:focus::before,
+.dock-app:focus-visible::before {
+  background: rgba(255,255,255,0.06) !important;
+  transform: translateX(-50%) !important;
+}
+
+/* Dock item feedback without moving the dock */
+/* Re-enable transitions just for icon graphics (override earlier freezes) */
+#dock .dock-app img,
+#dock .dock-app::before,
+#dock .dock-app span {
+  transition: transform .18s cubic-bezier(.2,.9,.25,1), box-shadow .18s ease, background .18s ease, color .18s ease !important;
+}
+
+/* Lift + scale icon (container stays fixed) */
+#dock .dock-app:is(:hover, :focus-visible) img { transform: scale(1.15) !important; }
+#dock .dock-app:is(:hover, :focus-visible)::before {
+  transform: translateX(-50%) scale(1.15) !important;
+  background: rgba(58,170,255,0.22) !important;
+  box-shadow: 0 8px 20px #000b, inset 0 1px 2px #fff3 !important;
+}
+#dock .dock-app:is(:hover, :focus-visible) span { color: #fff !important; }
+
+/* Press feedback (slightly smaller) */
+#dock .dock-app:active img { transform: scale(1.08) !important; }
+#dock .dock-app:active::before { transform: translateX(-50%) scale(1.08) !important; }
+
+/* Click pulse ring (added via JS by toggling .pulsing) */
+#dock .dock-app::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 34px;
+  width: 0; height: 0; border-radius: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+}
+#dock .dock-app.pulsing::after { animation: dockPulse .45s ease-out; background: radial-gradient(circle, rgba(90,170,255,.35) 0%, rgba(90,170,255,0) 60%); }
+@keyframes dockPulse {
+  from { opacity: .55; width: 12px; height: 12px; }
+  to   { opacity: 0;   width: 86px; height: 86px; }
+}
